@@ -44,8 +44,8 @@ info:
     This template can be used as a starting point for MQTT-based event-driven architectures.
 
   contact:
-    name: Your Name
-    email: your@email.com
+    name: Juan Manuel Jiménez
+    email: contacto@juanma-tech.com
 
 id: urn:mqtt:asyncapi:template
 
