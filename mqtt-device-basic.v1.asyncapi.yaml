@@ -67,6 +67,7 @@ servers:
     protocol: mqtt
     description: Development MQTT broker
 
+
 channels:
 
   mqtt/{clientid}/{location}/{area}/{subarea}/dev/{deviceid}/telemetry:
@@ -299,13 +300,19 @@ components:
       type: object
 
       required:
+        - timestamp
         - deviceId
         - status
 
       properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when status was published
 
         deviceId:
           type: string
+          example: esp32-device
 
         status:
           type: string
