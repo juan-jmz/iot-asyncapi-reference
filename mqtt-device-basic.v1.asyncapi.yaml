@@ -1,0 +1,354 @@
+asyncapi: 2.6.0
+
+info:
+  title: MQTT AsyncAPI Template
+  version: 1.0.0
+  description: |-
+    ## MQTT AsyncAPI Template
+
+    Base AsyncAPI template for MQTT and IoT projects. This template is designed to help developers create reusable,
+    scalable and well-structured MQTT communication contracts.
+
+    ### Includes examples for:
+    - MQTT brokers
+    - Topics
+    - Dynamic topic parameters
+    - Telemetry events
+    - Device status events
+    - Command topics
+    - Payload schemas
+    - Arrays
+    - Objects
+    - Enums
+    - Strings
+    - Integers
+    - Booleans
+
+    ### Recommended for:
+    - ESP32 projects
+    - IoT platforms
+    - Industrial IoT
+    - Smart sensors
+    - MQTT integrations
+    - Unified Namespace architectures
+
+    ### How to use:
+    - Replace broker information
+    - Replace topic structure
+    - Modify payload schemas
+    - Add more channels
+    - Add more messages
+    - Add new schemas
+    - Customize enums and datapoints
+
+    This template can be used as a starting point for MQTT-based event-driven architectures.
+
+  contact:
+    name: Your Name
+    email: your@email.com
+
+id: urn:mqtt:asyncapi:template
+
+servers:
+
+  production:
+
+    url: broker.example.com:1883
+    protocol: mqtt
+    description: |
+      Main production MQTT broker. Replace: domain, port, protocol and credentials
+
+    security:
+      - mqttUsernamePassword: []
+
+  development:
+
+    url: test.mosquitto.org:1883
+    protocol: mqtt
+    description: Development MQTT broker
+
+channels:
+
+  mqtt/{clientid}/{location}/{area}/{subarea}/dev/{deviceid}/telemetry:
+
+    description: |
+      MQTT topic used for telemetry events. Example: mqtt/client01/plant1/assembly/line1/dev/esp32-01/telemetry
+
+      This topic should contain sensor measurements,
+      telemetry values and real-time datapoints.
+
+    parameters:
+
+      clientid:
+        description: Customer or client identifier
+        schema:
+          type: string
+
+      location:
+        description: Device location
+        schema:
+          type: string
+
+      area:
+        description: Device area
+        schema:
+          type: string
+
+      subarea:
+        description: Device subarea
+        schema:
+          type: string
+
+      deviceid:
+        description: Device serial number or unique ID
+        schema:
+          type: string
+
+    publish:
+
+      operationId: publishTelemetry
+
+      tags:
+        - name: Telemetry
+
+      message:
+
+        name: TelemetryMessage
+        messageId: TelemetryMessage_v1.0.0
+
+        payload:
+          $ref: '#/components/schemas/TelemetryPayload'
+
+  mqtt/{clientid}/{location}/{area}/{subarea}/dev/{deviceid}/status:
+
+    description: |
+      MQTT topic used for device status events.
+
+      Example:
+      mqtt/client01/plant1/assembly/line1/dev/esp32-01/status
+
+      This topic should contain connectivity,
+      firmware and device state information.
+
+    parameters:
+
+      clientid:
+        description: Customer or client identifier
+        schema:
+          type: string
+
+      location:
+        description: Device location
+        schema:
+          type: string
+
+      area:
+        description: Device area
+        schema:
+          type: string
+
+      subarea:
+        description: Device subarea
+        schema:
+          type: string
+
+      deviceid:
+        description: Device serial number or unique ID
+        schema:
+          type: string
+
+    publish:
+
+      operationId: publishStatus
+
+      tags:
+        - name: Status
+
+      message:
+
+        name: StatusMessage
+        messageId: StatusMessage_v1.0.0
+
+        payload:
+          $ref: '#/components/schemas/StatusPayload'
+
+  mqtt/{clientid}/{location}/{area}/{subarea}/dev/{deviceid}/commands:
+
+    description: |
+      MQTT topic used to receive remote commands.
+
+      Example:
+      mqtt/client01/plant1/assembly/line1/dev/esp32-01/commands
+
+      This topic should contain control commands
+      sent from cloud applications to devices.
+
+    parameters:
+
+      clientid:
+        description: Customer or client identifier
+        schema:
+          type: string
+
+      location:
+        description: Device location
+        schema:
+          type: string
+
+      area:
+        description: Device area
+        schema:
+          type: string
+
+      subarea:
+        description: Device subarea
+        schema:
+          type: string
+
+      deviceid:
+        description: Device serial number or unique ID
+        schema:
+          type: string
+
+    subscribe:
+
+      operationId: receiveCommands
+
+      tags:
+        - name: Commands
+
+      message:
+
+        name: CommandMessage
+        messageId: CommandMessage_v1.0.0
+
+        payload:
+          $ref: '#/components/schemas/CommandPayload'
+
+components:
+
+  securitySchemes:
+
+    mqttUsernamePassword:
+      type: userPassword
+      description: MQTT username and password authentication
+
+  schemas:
+
+    TelemetryPayload:
+
+      type: object
+
+      required:
+        - timestamp
+        - deviceId
+        - datapoints
+
+      properties:
+
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when telemetry was published
+
+        deviceId:
+          type: string
+          description: Unique device identifier
+
+        datapoints:
+
+          type: array
+
+          items:
+
+            type: object
+
+            required:
+              - name
+              - value
+              - units
+
+            properties:
+
+              name:
+                type: string
+                example: temperature
+
+              value:
+                type: number
+                example: 23.5
+
+              units:
+                type: string
+                example: °C
+
+              port:
+                type: integer
+                example: 1
+
+              type:
+                type: string
+
+                enum:
+                  - analog
+                  - digital
+                  - system
+
+    StatusPayload:
+
+      type: object
+
+      required:
+        - deviceId
+        - status
+
+      properties:
+
+        deviceId:
+          type: string
+
+        status:
+          type: string
+
+          enum:
+            - online
+            - offline
+            - rebooting
+            - error
+
+        firmwareVersion:
+          type: string
+
+        ip:
+          type: string
+
+        wifiRssi:
+          type: integer
+
+        connected:
+          type: boolean
+
+    CommandPayload:
+
+      type: object
+
+      required:
+        - command
+
+      properties:
+
+        command:
+          type: string
+
+          enum:
+            - reboot
+            - restart
+            - start
+            - stop
+            - factory_reset
+
+        requestId:
+          type: string
+
+        parameters:
+          type: object
